@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Cozy theme — keep in sync with cozy-web's src/index.css. */
+@theme {
+  --color-primary : #554CF1;
+  --color-primary-dark : #232050;
+  --color-primary-light : #EEF0FD;
+  --color-dark-900 : #111111;
+  --color-muted : #6A6A6A;
+  --color-muted-light : #848484;
+  --color-line : #E8E8E8;
+  --color-line-strong : #DCDCDC;
+  --color-surface : #F5F5F5;
+  --color-subtle : #9C9C9C;
+  --color-placeholder : #B6B6B6;
+  --font-primary : 'Inter', 'sans-serif';
+}
+
+body {
+  @apply font-primary text-dark-900;
+}
+
+/* ---------- Forms (shared with cozy-web's modals) ---------- */
+
+.modal-heading {
+  @apply flex flex-col items-start justify-center gap-1;
+}
+
+.modal-title {
+  @apply text-[24px] leading-normal font-semibold text-dark-900;
+}
+
+.modal-hint {
+  @apply text-[14px] leading-normal text-muted;
+}
+
+.modal-error {
+  @apply mt-2 text-[12px] leading-normal text-red-600;
+}
+
+.modal-fields {
+  @apply flex flex-col gap-[10px];
+}
+
+.modal-field {
+  @apply relative flex flex-col gap-[10px] pt-[10px] pb-[14px] px-[14px] bg-white rounded-[20px]
+         shadow-[0_4px_15px_rgba(0,0,0,0.1)] cursor-text transition-shadow
+         focus-within:ring-2 focus-within:ring-primary/40;
+}
+
+.modal-field-label {
+  @apply text-[12px] leading-normal font-medium text-muted;
+}
+
+.modal-field-input {
+  @apply w-full min-w-0 p-0 bg-transparent border-0 outline-none text-[16px] leading-normal text-dark-900
+         placeholder:text-muted/60;
+}
+
+.modal-btn {
+  @apply flex items-center justify-center w-full h-[54px] shrink-0 px-5 rounded-full border-0
+         text-[16px] leading-normal font-semibold cursor-pointer transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.modal-btn-primary {
+  @apply bg-primary text-white enabled:hover:bg-primary/90;
+}
+
