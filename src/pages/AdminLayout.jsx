@@ -1,48 +1,76 @@
-import { LayoutDashboard, LogOut, Store } from 'lucide-react'
-import logo from '../assets/logo.svg'
+import { useState } from 'react'
+import { LayoutDashboard, LogOut, Store, Users } from 'lucide-react'
+import Logo from './Logo'
 import { adminLinkClick, adminPaths } from '../navigation'
+import { can, roleLabel } from '../permissions'
 
+// `permission` hides the item for roles that can't use it (the server still checks).
 const NAV = [
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'bakeries', label: 'Bakeries', icon: Store },
+  { page: 'staff', label: 'Staff', icon: Users, permission: 'staff:manage' },
 ]
 
-const AdminLayout = ({ page, session, onLogout, children }) => (
-  <div className="admin-shell">
-    <aside className="admin-sidebar">
-      <a href={adminPaths.dashboard} className="admin-brand" onClick={adminLinkClick(adminPaths.dashboard)}>
-        <img src={logo} alt="cozy" className="admin-logo admin-logo--sidebar" />
-      </a>
+const AdminLayout = ({ page, staff, onLogout, children }) => {
+  const [signingOut, setSigningOut] = useState(false)
+  const name = staff.name || staff.email || 'Staff'
 
-      <nav className="admin-nav">
-        {NAV.map(({ page: id, label, icon: Icon }) => (
+  const logout = async () => {
+    setSigningOut(true)
+    await onLogout()
+  }
+
+  return (
+    <div className="admin-shell">
+      <aside className="admin-sidebar">
+        <a href={adminPaths.dashboard} className="admin-brand" onClick={adminLinkClick(adminPaths.dashboard)}>
+          <Logo className="admin-logo--sidebar" />
+        </a>
+
+        <nav className="admin-nav" aria-label="Main">
+          {NAV.filter((item) => can(staff, item.permission)).map(({ page: id, label, icon: Icon }) => (
+            <a
+              key={id}
+              href={adminPaths[id]}
+              className="admin-nav-link"
+              aria-current={page === id ? 'page' : undefined}
+              onClick={adminLinkClick(adminPaths[id])}
+            >
+              <Icon strokeWidth={1.5} />
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="admin-account">
           <a
-            key={id}
-            href={adminPaths[id]}
-            className="admin-nav-link"
-            aria-current={page === id ? 'page' : undefined}
-            onClick={adminLinkClick(adminPaths[id])}
+            href={adminPaths.account}
+            className="admin-account-link"
+            onClick={adminLinkClick(adminPaths.account)}
+            aria-label={`My account: ${name}`}
           >
-            <Icon strokeWidth={1.5} />
-            {label}
+            <span className="admin-avatar" aria-hidden="true">{name[0]}</span>
+            <span className="admin-account-text">
+              <span className="admin-account-name">{name}</span>
+              <span className="admin-account-email">{roleLabel(staff.role)}</span>
+            </span>
           </a>
-        ))}
-      </nav>
-
-      <div className="admin-account">
-        <span className="admin-avatar" aria-hidden="true">{session.name[0]}</span>
-        <div className="admin-account-text">
-          <p className="admin-account-name">{session.name}</p>
-          <p className="admin-account-email">{session.email}</p>
+          <button
+            type="button"
+            className="admin-icon-btn"
+            onClick={logout}
+            disabled={signingOut}
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut strokeWidth={1.5} />
+          </button>
         </div>
-        <button type="button" className="admin-icon-btn" onClick={onLogout} aria-label="Sign out">
-          <LogOut strokeWidth={1.5} />
-        </button>
-      </div>
-    </aside>
+      </aside>
 
-    <main className="admin-main">{children}</main>
-  </div>
-)
+      <main className="admin-main">{children}</main>
+    </div>
+  )
+}
 
 export default AdminLayout

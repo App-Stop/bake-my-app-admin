@@ -1,10 +1,40 @@
-import { TrendingDown, TrendingUp } from 'lucide-react'
+import { Lock, TrendingDown, TrendingUp } from 'lucide-react'
 
-export const AdminHeader = ({ title, subtitle }) => (
+export const AdminHeader = ({ title, subtitle, tag, actions }) => (
   <header className="admin-header">
-    <h1 className="admin-title">{title}</h1>
-    {subtitle && <p className="admin-subtitle">{subtitle}</p>}
+    <div className="admin-header-text">
+      <div className="admin-header-title-row">
+        <h1 className="admin-title">{title}</h1>
+        {tag && <span className="admin-tag">{tag}</span>}
+      </div>
+      {subtitle && <p className="admin-subtitle">{subtitle}</p>}
+    </div>
+    {actions && <div className="admin-header-actions">{actions}</div>}
   </header>
+)
+
+// White panel with an optional heading row; the base block for forms and lists.
+export const Panel = ({ title, hint, action, children, className = '' }) => (
+  <section className={`admin-card ${className}`}>
+    {(title || action) && (
+      <div className="admin-card-head">
+        <div className="min-w-0">
+          {title && <h2 className="admin-card-title">{title}</h2>}
+          {hint && <p className="admin-card-hint">{hint}</p>}
+        </div>
+        {action}
+      </div>
+    )}
+    <div className="admin-card-body">{children}</div>
+  </section>
+)
+
+export const NoAccess = () => (
+  <div className="admin-empty">
+    <span className="admin-empty-icon"><Lock strokeWidth={1.5} /></span>
+    <h2 className="admin-card-title">You do not have access to this</h2>
+    <p className="admin-subtitle">Ask a super admin if you need this screen.</p>
+  </div>
 )
 
 export const StatCard = ({ icon: Icon, label, value, change, highlight = false }) => {

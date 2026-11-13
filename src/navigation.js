@@ -1,13 +1,27 @@
 // Path router for the admin app. Unknown paths fall back to the dashboard.
-export const adminPaths = { dashboard: '/', bakeries: '/bakeries' }
+export const adminPaths = {
+  dashboard: '/',
+  bakeries: '/bakeries',
+  staff: '/staff',
+  account: '/account',
+  login: '/login',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
+  acceptInvite: '/accept-invite',
+}
+
+// Pages reachable without a session (emailed links land on the last two).
+export const PUBLIC_PAGES = new Set(['login', 'forgotPassword', 'resetPassword', 'acceptInvite'])
 
 const PAGES = Object.fromEntries(Object.entries(adminPaths).map(([page, path]) => [path, page]))
 
 export const currentAdminPage = () =>
   PAGES[window.location.pathname.replace(/(.)\/+$/, '$1')] ?? 'dashboard'
 
-export const navigateAdmin = (path) => {
-  window.history.pushState(null, '', path)
+export const queryParam = (name) => new URLSearchParams(window.location.search).get(name) ?? ''
+
+export const navigateAdmin = (path, { replace = false } = {}) => {
+  window.history[replace ? 'replaceState' : 'pushState'](null, '', path)
   window.dispatchEvent(new PopStateEvent('popstate'))
 }
 

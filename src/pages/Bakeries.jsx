@@ -36,7 +36,7 @@ const Bakeries = () => {
 
   return (
     <div className="admin-page">
-      <AdminHeader title="Bakeries" subtitle={`${BAKERIES.length} bakeries are using Cozy right now.`} />
+      <AdminHeader title="Bakeries" subtitle={`${BAKERIES.length} bakeries are using Cozy right now.`} tag="Sample data" />
 
       <div className="admin-toolbar">
         <label className="admin-search">

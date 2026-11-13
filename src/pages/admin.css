@@ -1,129 +1,314 @@
 @reference '../index.css';
 
-/* ---------- Admin: login ---------- */
+/*
+ * Admin panel — flat theme.
+ * Surfaces are separated by colour (white on #F5F5F5), not by shadows or
+ * outlines. Radii: 10px panels, 8px controls, 4–6px pills.
+ * Short screens and small laptops are tuned in the blocks at the end.
+ */
 
-.admin-login {
-  @apply relative flex items-center justify-center min-h-screen px-4 py-10 overflow-hidden bg-surface text-dark-900;
+/* ---------- Auth screens (sign in, reset, invite) ---------- */
+
+.admin-auth {
+  @apply flex flex-col min-h-dvh px-4 py-8 bg-surface text-dark-900;
 }
 
-/* Same lilac glow as the profile hero. */
-.admin-login-glow {
-  @apply absolute -top-40 left-0 w-full h-80 pointer-events-none
-         bg-[radial-gradient(60%_100%_at_70%_100%,rgba(85,76,241,0.35),transparent_70%),radial-gradient(40%_100%_at_15%_100%,rgba(85,76,241,0.25),transparent_70%)]
-         blur-2xl;
+/* `m-auto` centres the card but lets it scroll from the top when it is taller than the screen. */
+.admin-auth-inner {
+  @apply flex flex-col gap-5 w-full max-w-[420px] m-auto;
 }
 
-.admin-login-card {
-  @apply relative flex flex-col gap-[30px] w-full max-w-[440px] p-6 sm:p-10 bg-white rounded-[30px]
-         shadow-[0_4px_40px_rgba(0,0,0,0.08)];
-}
-
-.admin-login-head {
+.admin-auth-head {
   @apply flex items-center justify-between;
 }
 
+/* The SVG is a mask, so `color` sets the logo colour (111×51 artwork). */
 .admin-logo {
-  @apply block h-8 w-auto;
+  @apply block h-9 w-auto aspect-[111/51] shrink-0 bg-current text-primary;
+  mask: url('/logo.svg') center / contain no-repeat;
 }
 
-/* The logo is white, so it sits on a primary tile on the white login card. */
-.admin-login-head .admin-logo {
-  @apply box-content px-3 py-2 rounded-[14px] bg-primary;
+.admin-sidebar .admin-logo {
+  @apply text-white;
+}
+
+.admin-auth-head .admin-logo {
+  @apply h-11;
 }
 
 .admin-badge {
-  @apply inline-flex items-center gap-1 px-[10px] py-1 rounded-full bg-primary-light
-         text-[12px] leading-normal font-semibold text-primary;
+  @apply inline-flex items-center gap-1 px-2 py-1 rounded-[6px] bg-primary-light
+         text-[12px] leading-none font-semibold text-primary;
 }
 
 .admin-badge svg {
   @apply size-3;
 }
 
-/* ---------- Admin: shell ---------- */
-
-.admin-shell {
-  @apply flex flex-col lg:flex-row min-h-screen bg-surface text-dark-900;
+.admin-auth-card {
+  @apply flex flex-col gap-6 p-6 sm:p-8 bg-white rounded-[10px];
 }
 
+.admin-auth-heading {
+  @apply flex flex-col gap-1;
+}
+
+.admin-auth-title {
+  @apply text-[22px] sm:text-[24px] leading-tight font-semibold;
+}
+
+.admin-auth-hint {
+  @apply text-[14px] leading-normal text-muted;
+}
+
+.admin-auth-footer {
+  @apply flex justify-center;
+}
+
+.admin-boot {
+  @apply flex items-center justify-center min-h-dvh bg-surface;
+}
+
+/* ---------- Form controls ---------- */
+
+.admin-fields,
+.admin-form {
+  @apply flex flex-col gap-4;
+}
+
+.admin-form-row {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+.admin-form-actions {
+  @apply flex flex-wrap justify-end gap-2;
+}
+
+.admin-field {
+  @apply flex flex-col gap-1.5 min-w-0;
+}
+
+.admin-label {
+  @apply text-[13px] leading-normal font-medium text-dark-900;
+}
+
+.admin-input {
+  @apply w-full min-w-0 h-11 px-3 rounded-[8px] border-0 bg-surface text-[14px] text-dark-900
+         outline-0 transition-colors placeholder:text-placeholder
+         focus:bg-white focus:outline-solid focus:outline-2 focus:outline-primary focus:-outline-offset-2
+         disabled:text-muted disabled:cursor-not-allowed;
+}
+
+.admin-input[aria-invalid='true'] {
+  @apply bg-red-50 focus:outline-red-500;
+}
+
+.admin-input-wrap {
+  @apply relative;
+}
+
+.admin-input--icon {
+  @apply pr-11;
+}
+
+.admin-input-toggle {
+  @apply absolute inset-y-0 right-0 flex items-center justify-center w-11 border-0 bg-transparent
+         text-muted-light cursor-pointer rounded-r-[8px] hover:text-primary;
+}
+
+.admin-input-toggle svg {
+  @apply size-[18px];
+}
+
+.admin-select {
+  @apply appearance-none pr-10 cursor-pointer bg-no-repeat bg-[position:right_12px_center] bg-[length:16px];
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236A6A6A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
+.admin-field-error {
+  @apply text-[12px] leading-normal text-red-600;
+}
+
+.admin-field-hint {
+  @apply text-[12px] leading-normal text-muted-light;
+}
+
+.admin-rules {
+  @apply flex flex-wrap gap-x-4 gap-y-1 -mt-2 list-none text-[12px] leading-normal text-muted-light;
+}
+
+.admin-rules li {
+  @apply flex items-center gap-1;
+}
+
+.admin-rules svg {
+  @apply size-3.5 text-line-strong;
+}
+
+.admin-rules li.is-met {
+  @apply text-emerald-700;
+}
+
+.admin-rules li.is-met svg {
+  @apply text-emerald-600;
+}
+
+.admin-btn {
+  @apply inline-flex items-center justify-center gap-2 h-11 shrink-0 px-5 rounded-[8px] border-0
+         text-[14px] leading-none font-semibold cursor-pointer transition-colors
+         disabled:opacity-50 disabled:cursor-not-allowed
+         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary;
+}
+
+.admin-btn svg {
+  @apply size-4;
+}
+
+.admin-btn--primary {
+  @apply bg-primary text-white enabled:hover:bg-primary-dark;
+}
+
+.admin-btn--secondary {
+  @apply bg-surface text-dark-900 enabled:hover:bg-line;
+}
+
+.admin-spin {
+  @apply animate-spin;
+}
+
+.admin-spinner {
+  @apply inline-flex text-primary;
+}
+
+.admin-spinner svg {
+  @apply size-6;
+}
+
+.admin-alert {
+  @apply flex items-start gap-2 p-3 rounded-[8px] text-[13px] leading-normal;
+}
+
+.admin-alert > svg {
+  @apply size-4 shrink-0 mt-[2px];
+}
+
+.admin-alert-body {
+  @apply flex flex-col items-start gap-1 min-w-0;
+}
+
+.admin-alert--error {
+  @apply bg-red-50 text-red-700;
+}
+
+.admin-alert--success {
+  @apply bg-emerald-50 text-emerald-800;
+}
+
+.admin-alert--info {
+  @apply bg-primary-light text-primary-dark;
+}
+
+.admin-link {
+  @apply inline-flex items-center gap-1 text-[14px] font-medium text-primary no-underline hover:underline;
+}
+
+.admin-link svg {
+  @apply size-4;
+}
+
+.admin-link--end {
+  @apply self-end -mt-1 text-[13px];
+}
+
+/* ---------- Shell ---------- */
+
+.admin-shell {
+  @apply flex flex-col lg:flex-row min-h-dvh bg-surface text-dark-900;
+}
+
+/* Top bar on phones and tablets, fixed-height column from lg. */
 .admin-sidebar {
-  @apply flex lg:flex-col items-center lg:items-stretch gap-3 lg:gap-8 px-4 py-3 lg:p-6
-         lg:w-[260px] lg:shrink-0 lg:h-screen lg:sticky lg:top-0 bg-primary text-white;
+  @apply sticky top-0 z-10 flex lg:flex-col items-center lg:items-stretch gap-3 lg:gap-8
+         px-4 py-3 lg:p-6 lg:w-[248px] lg:shrink-0 lg:h-dvh bg-primary text-white;
 }
 
 .admin-brand {
-  @apply flex items-center gap-2 shrink-0 no-underline;
+  @apply flex items-center shrink-0 no-underline;
 }
 
-/* Native logo size (72.5×44) on desktop, trimmed to fit the mobile top bar. */
 .admin-logo--sidebar {
-  @apply h-9 lg:h-11;
+  @apply h-9 lg:h-12;
 }
 
+/* Scrolls sideways on phones and down on short screens instead of overflowing. */
 .admin-nav {
-  @apply flex lg:flex-col gap-1 lg:flex-1;
+  @apply flex lg:flex-col gap-1 flex-1 min-w-0 lg:min-h-0 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto
+         [scrollbar-width:none];
 }
 
 .admin-nav-link {
-  @apply flex items-center gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-full no-underline
-         text-[14px] lg:text-[16px] leading-normal font-medium text-white/75
-         hover:bg-white/10 hover:text-white transition-colors;
+  @apply flex items-center gap-3 shrink-0 px-2.5 sm:px-3 py-2 lg:py-2.5 rounded-[8px] no-underline
+         text-[14px] leading-normal font-medium text-white/75 hover:bg-white/10 hover:text-white transition-colors;
 }
 
 .admin-nav-link svg {
-  @apply hidden sm:block size-5 shrink-0;
+  @apply hidden sm:block size-[18px] shrink-0;
 }
 
-/* Active item mirrors the navbar's solid white button. */
 .admin-nav-link[aria-current='page'] {
   @apply bg-white font-semibold text-primary hover:bg-white hover:text-primary;
 }
 
 .admin-account {
-  @apply flex items-center gap-3 ml-auto lg:ml-0 lg:pt-4 lg:border-t border-white/20;
+  @apply flex items-center gap-2 shrink-0;
+}
+
+.admin-account-link {
+  @apply flex items-center gap-3 flex-1 min-w-0 rounded-[8px] no-underline text-white lg:p-2 lg:-m-2
+         hover:bg-white/10 transition-colors;
+}
+
+.admin-account-text {
+  @apply hidden lg:flex flex-col flex-1 min-w-0;
+}
+
+.admin-account-name {
+  @apply text-[14px] leading-normal font-semibold truncate;
+}
+
+.admin-account-email {
+  @apply text-[12px] leading-normal text-white/70 truncate;
+}
+
+.admin-avatar {
+  @apply flex items-center justify-center size-9 shrink-0 rounded-[8px] bg-primary-light
+         text-[14px] font-semibold text-primary uppercase;
 }
 
 .admin-sidebar .admin-avatar {
   @apply bg-white/15 text-white;
 }
 
-.admin-sidebar .admin-account-email {
-  @apply text-white/70;
-}
-
-/* Outlined like the navbar's "Log in" button. */
-.admin-sidebar .admin-icon-btn {
-  @apply bg-transparent border-white/40 text-white hover:bg-white/10 hover:text-white;
-}
-
-.admin-account-text {
-  @apply hidden lg:block flex-1 min-w-0;
-}
-
-.admin-account-name {
-  @apply text-[14px] leading-normal font-semibold capitalize truncate;
-}
-
-.admin-account-email {
-  @apply text-[12px] leading-normal text-muted truncate;
-}
-
-.admin-avatar {
-  @apply hidden lg:flex items-center justify-center size-10 shrink-0 rounded-full bg-primary-light
-         text-[16px] font-semibold text-primary uppercase;
-}
-
 .admin-avatar--sm {
-  @apply flex size-9 text-[14px];
+  @apply size-8 text-[13px];
+}
+
+.admin-avatar--lg {
+  @apply size-12 text-[18px];
 }
 
 .admin-icon-btn {
-  @apply flex items-center justify-center size-10 shrink-0 rounded-full bg-white border border-line
-         text-muted cursor-pointer hover:bg-primary-light hover:text-primary transition-colors;
+  @apply flex items-center justify-center size-9 shrink-0 rounded-[8px] border-0 bg-surface
+         text-muted cursor-pointer transition-colors hover:bg-primary-light hover:text-primary
+         disabled:opacity-50 disabled:cursor-wait;
+}
+
+.admin-sidebar .admin-icon-btn {
+  @apply bg-white/10 text-white hover:bg-white/20 hover:text-white;
 }
 
 .admin-icon-btn svg {
-  @apply size-5;
+  @apply size-[18px];
 }
 
 .admin-main {
@@ -131,29 +316,134 @@
 }
 
 .admin-page {
-  @apply flex flex-col gap-6 lg:gap-8 max-w-[1400px] mx-auto;
+  @apply flex flex-col gap-6 max-w-[1400px] mx-auto;
+}
+
+.admin-page--narrow {
+  @apply max-w-[820px];
 }
 
 .admin-header {
-  @apply flex flex-col gap-1;
+  @apply flex flex-wrap items-end justify-between gap-4;
+}
+
+.admin-header-text {
+  @apply flex flex-col gap-1 min-w-0;
+}
+
+.admin-header-title-row {
+  @apply flex flex-wrap items-center gap-x-3 gap-y-1;
+}
+
+.admin-header-actions {
+  @apply flex flex-wrap gap-2;
 }
 
 .admin-title {
-  @apply text-[26px] sm:text-[32px] leading-normal font-semibold;
+  @apply text-[24px] sm:text-[28px] leading-tight font-semibold;
 }
 
 .admin-subtitle {
-  @apply text-[16px] leading-normal text-muted;
+  @apply text-[14px] sm:text-[15px] leading-normal text-muted;
 }
 
-/* ---------- Admin: stat cards ---------- */
+.admin-tag {
+  @apply inline-flex px-2 py-1 rounded-[4px] bg-amber-50 text-[11px] leading-none font-semibold
+         uppercase tracking-wide text-amber-700;
+}
+
+/* ---------- Panels ---------- */
+
+.admin-card {
+  @apply flex flex-col min-w-0 bg-white rounded-[10px] overflow-hidden;
+}
+
+.admin-card-head {
+  @apply flex items-start justify-between gap-4 px-5 pt-5 pb-4;
+}
+
+.admin-card-title {
+  @apply text-[16px] leading-normal font-semibold;
+}
+
+.admin-card-hint {
+  @apply text-[13px] leading-normal text-muted;
+}
+
+.admin-card-body {
+  @apply px-5 pb-5;
+}
+
+/* Panels without a heading still need top padding. */
+.admin-card > .admin-card-body:first-child {
+  @apply pt-5;
+}
+
+.admin-split {
+  @apply grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start;
+}
+
+.admin-stack {
+  @apply flex flex-col gap-6 min-w-0;
+}
+
+.admin-summary {
+  @apply flex flex-wrap items-center gap-4 p-5 bg-white rounded-[10px];
+}
+
+.admin-summary-name {
+  @apply text-[16px] leading-normal font-semibold truncate;
+}
+
+.admin-role {
+  @apply inline-flex shrink-0 px-2 py-1 ml-auto rounded-[6px] bg-primary-light text-[12px] leading-none
+         font-semibold text-primary;
+}
+
+.admin-list {
+  @apply flex flex-col list-none;
+}
+
+.admin-list li {
+  @apply flex items-center gap-3 py-3 border-t border-surface first:border-t-0 first:pt-0 last:pb-0;
+}
+
+.admin-roles {
+  @apply flex flex-col gap-2;
+}
+
+.admin-roles > div {
+  @apply p-3 rounded-[8px] bg-surface;
+}
+
+.admin-roles dt {
+  @apply text-[14px] leading-normal font-semibold;
+}
+
+.admin-roles dd {
+  @apply text-[13px] leading-normal text-muted;
+}
+
+.admin-empty {
+  @apply flex flex-col items-center gap-2 px-6 py-16 text-center bg-white rounded-[10px];
+}
+
+.admin-empty-icon {
+  @apply flex items-center justify-center size-12 mb-2 rounded-[10px] bg-primary-light text-primary;
+}
+
+.admin-empty-icon svg {
+  @apply size-6;
+}
+
+/* ---------- Stat cards ---------- */
 
 .admin-stats {
   @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4;
 }
 
 .admin-stat {
-  @apply flex flex-col gap-2 p-5 bg-white rounded-[20px] shadow-[0_4px_15px_rgba(0,0,0,0.06)];
+  @apply flex flex-col gap-2 p-5 bg-white rounded-[10px];
 }
 
 .admin-stat-top {
@@ -165,15 +455,15 @@
 }
 
 .admin-stat-icon {
-  @apply flex items-center justify-center size-10 shrink-0 rounded-full bg-primary-light text-primary;
+  @apply flex items-center justify-center size-9 shrink-0 rounded-[8px] bg-primary-light text-primary;
 }
 
 .admin-stat-icon svg {
-  @apply size-5;
+  @apply size-[18px];
 }
 
 .admin-stat-value {
-  @apply text-[28px] leading-tight font-bold tabular-nums;
+  @apply text-[26px] leading-tight font-bold tabular-nums;
 }
 
 .admin-trend {
@@ -196,7 +486,6 @@
   @apply text-red-600;
 }
 
-/* The lead card is painted primary, like the wallet band. */
 .admin-stat--primary {
   @apply bg-primary text-white;
 }
@@ -211,30 +500,10 @@
   @apply bg-white/20 text-white;
 }
 
-/* ---------- Admin: tables ---------- */
+/* ---------- Tables ---------- */
 
 .admin-grid {
   @apply grid grid-cols-1 2xl:grid-cols-2 gap-6;
-}
-
-.admin-card {
-  @apply flex flex-col min-w-0 bg-white rounded-[20px] shadow-[0_4px_15px_rgba(0,0,0,0.06)] overflow-hidden;
-}
-
-.admin-card-head {
-  @apply flex items-center justify-between gap-4 px-5 pt-5 pb-3;
-}
-
-.admin-card-title {
-  @apply text-[18px] leading-normal font-semibold;
-}
-
-.admin-link {
-  @apply flex items-center gap-1 text-[14px] font-medium text-primary no-underline hover:underline;
-}
-
-.admin-link svg {
-  @apply size-4;
 }
 
 .admin-table-wrap {
@@ -246,11 +515,11 @@
 }
 
 .admin-table th {
-  @apply px-5 py-3 bg-surface text-left text-[12px] font-semibold uppercase tracking-wide text-muted-light whitespace-nowrap;
+  @apply px-5 py-2.5 bg-surface/60 text-left text-[12px] font-semibold uppercase tracking-wide text-muted-light whitespace-nowrap;
 }
 
 .admin-table td {
-  @apply px-5 py-3 border-t border-line whitespace-nowrap tabular-nums;
+  @apply px-5 py-3 border-t border-surface whitespace-nowrap tabular-nums;
 }
 
 .admin-table th.text-right,
@@ -259,7 +528,7 @@
 }
 
 .admin-table tbody tr {
-  @apply hover:bg-primary-light/50 transition-colors;
+  @apply hover:bg-primary-light/40 transition-colors;
 }
 
 .admin-table-empty {
@@ -279,7 +548,7 @@
 }
 
 .admin-status {
-  @apply inline-flex px-[10px] py-[2px] rounded-full text-[12px] leading-normal font-semibold;
+  @apply inline-flex px-2 py-[3px] rounded-[4px] text-[12px] leading-normal font-semibold;
 }
 
 .admin-status--active {
@@ -306,19 +575,19 @@
   @apply size-4 fill-amber-400;
 }
 
-/* ---------- Admin: toolbar ---------- */
+/* ---------- Toolbar ---------- */
 
 .admin-toolbar {
   @apply flex flex-col md:flex-row md:items-center justify-between gap-3;
 }
 
 .admin-search {
-  @apply flex items-center gap-2 w-full md:max-w-[360px] h-[47px] px-4 bg-white rounded-full cursor-text
-         shadow-[0_4px_15px_rgba(0,0,0,0.06)] focus-within:ring-2 focus-within:ring-primary/40;
+  @apply flex items-center gap-2 w-full md:max-w-[360px] h-10 px-3 bg-white rounded-[8px] cursor-text
+         focus-within:outline-solid focus-within:outline-2 focus-within:outline-primary focus-within:-outline-offset-2;
 }
 
 .admin-search svg {
-  @apply size-5 shrink-0 text-muted;
+  @apply size-[18px] shrink-0 text-muted;
 }
 
 .admin-search input {
@@ -330,10 +599,124 @@
 }
 
 .admin-filter {
-  @apply px-4 py-2 rounded-full bg-white border border-line text-[14px] leading-normal font-medium text-muted
+  @apply h-10 px-4 rounded-[8px] border-0 bg-white text-[14px] leading-none font-medium text-muted
          cursor-pointer hover:bg-primary-light hover:text-primary transition-colors;
 }
 
 .admin-filter[aria-pressed='true'] {
-  @apply bg-primary border-primary text-white;
+  @apply bg-primary text-white;
+}
+
+/* ---------- Small laptops (1024–1439px wide): tighter scale ---------- */
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .admin-sidebar {
+    @apply w-[220px] p-5 gap-6;
+  }
+
+  .admin-main {
+    @apply px-7 py-7;
+  }
+
+  .admin-page,
+  .admin-stack,
+  .admin-split,
+  .admin-grid {
+    @apply gap-5;
+  }
+
+  .admin-title {
+    @apply text-[24px];
+  }
+
+  .admin-stat {
+    @apply p-4;
+  }
+
+  .admin-stat-value {
+    @apply text-[22px];
+  }
+
+  .admin-table th,
+  .admin-table td {
+    @apply px-4;
+  }
+
+  .admin-split {
+    @apply grid-cols-[minmax(0,1fr)_280px];
+  }
+}
+
+/* ---------- Short screens (laptops at 768–800px tall, zoomed browsers) ---------- */
+
+@media (max-height: 820px) {
+  .admin-auth {
+    @apply py-5;
+  }
+
+  .admin-auth-inner {
+    @apply gap-4;
+  }
+
+  .admin-auth-card {
+    @apply gap-5 sm:p-6;
+  }
+
+  .admin-fields,
+  .admin-form {
+    @apply gap-3;
+  }
+
+  .admin-input,
+  .admin-btn {
+    @apply h-10;
+  }
+
+  .admin-input-toggle {
+    @apply w-10;
+  }
+
+  .admin-main {
+    @apply lg:py-6;
+  }
+
+  .admin-page {
+    @apply gap-5;
+  }
+
+  .admin-card-head {
+    @apply pt-4 pb-3;
+  }
+
+  .admin-card-body {
+    @apply pb-4;
+  }
+
+  .admin-card > .admin-card-body:first-child {
+    @apply pt-4;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 820px) {
+  .admin-sidebar {
+    @apply p-4 gap-5;
+  }
+
+  .admin-logo--sidebar {
+    @apply h-10;
+  }
+
+  .admin-nav-link {
+    @apply py-2;
+  }
+}
+
+@media (max-height: 640px) {
+  .admin-auth-head {
+    @apply hidden;
+  }
+
+  .admin-auth-hint {
+    @apply text-[13px];
+  }
 }

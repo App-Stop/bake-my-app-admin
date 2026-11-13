@@ -28,7 +28,7 @@ const BAKERY_COLUMNS = [
 
 const Dashboard = () => (
   <div className="admin-page">
-    <AdminHeader title="Dashboard" subtitle="An overview of how Cozy is doing." />
+    <AdminHeader title="Dashboard" subtitle="An overview of how Cozy is doing." tag="Sample data" />
 
     <div className="admin-stats">
       {ADMIN_STATS.map((stat, index) => (

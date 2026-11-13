@@ -1,38 +1,53 @@
-// Placeholder admin auth — swap for the real admin API once the backend exists.
-// Until then any valid email with the demo password signs in. The session lives
-// in sessionStorage, so it ends with the tab. This is a UI gate only: real
-// protection must come from the backend.
-const SESSION_KEY = 'cozy-admin-session'
-const DEMO_PASSWORD = 'cozyadmin'
+// Admin auth and account calls (step 1 of the admin API).
+import { endSession, refreshSession, request, startSession, updateStaff } from './api'
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const post = (path, body) => request(path, { method: 'POST', body })
 
-export const getAdminSession = () => {
-  try {
-    return JSON.parse(sessionStorage.getItem(SESSION_KEY))
-  } catch {
-    return null
-  }
+// On page load: a valid refresh cookie signs the person straight back in.
+export const restoreSession = () => refreshSession().catch(() => {})
+
+export const signIn = async (email, password) => {
+  const { data } = await post('/v1/admin/auth/login', { email, password })
+  startSession(data)
 }
 
-export const adminLogin = async (email, password) => {
-  await delay(600)
-  if (!/^\S+@\S+\.\S+$/.test(email) || password !== DEMO_PASSWORD) {
-    throw new Error('Incorrect email or password')
-  }
-  const session = { email, name: email.split('@')[0] }
+export const signOut = async () => {
   try {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session))
+    await request('/v1/admin/auth/logout', { method: 'POST' })
   } catch {
-    // Storage blocked — the session just won't survive a reload.
+    // Always answers 200; if the call itself fails we still clear local state.
   }
-  return session
+  endSession()
 }
 
-export const adminLogout = () => {
-  try {
-    sessionStorage.removeItem(SESSION_KEY)
-  } catch {
-    // Nothing stored to clear.
-  }
+export const requestPasswordReset = (email) => post('/v1/admin/auth/forgot-password', { email })
+
+export const resetPassword = (token, password) => post('/v1/admin/auth/reset-password', { token, password })
+
+export const acceptInvite = async (token, name, password) => {
+  const { data } = await post('/v1/admin/auth/accept-invite', { token, name, password })
+  startSession(data)
 }
+
+// `/me` may answer with the staff record itself or wrapped as `{ staff }`.
+const staffFrom = (data) => data?.staff ?? data
+
+export const fetchProfile = async () => {
+  const { data } = await request('/v1/admin/me')
+  updateStaff(staffFrom(data))
+}
+
+export const renameMe = async (name) => {
+  const res = await request('/v1/admin/me', { method: 'PATCH', body: { name } })
+  updateStaff(staffFrom(res.data) ?? { name })
+  return res
+}
+
+// The old access token stops working: the response carries the new session.
+export const changePassword = async (currentPassword, newPassword) => {
+  const res = await post('/v1/admin/me/change-password', { currentPassword, newPassword })
+  startSession(res.data)
+  return res
+}
+
+export const inviteStaff = (invite) => post('/v1/admin/staff/invites', invite)
