@@ -4,7 +4,7 @@
 // - a 401 triggers one refresh and one retry; refreshes never overlap, because
 //   reusing a rotated cookie revokes the session on every device.
 
-export const API_URL = (import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3060').replace(/\/+$/, '')
+export const API_URL = (import.meta.env.VITE_ADMIN_API_URL || 'https://api.dev.bakemyapp.appstopworkforce.com').replace(/\/+$/, '')
 
 const AUTH_PREFIX = '/v1/admin/auth/'
 
