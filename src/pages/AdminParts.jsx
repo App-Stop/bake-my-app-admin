@@ -1,4 +1,5 @@
 import { Lock, TrendingDown, TrendingUp } from 'lucide-react'
+import { label } from '../data/format'
 
 export const AdminHeader = ({ title, subtitle, tag, actions }) => (
   <header className="admin-header">
@@ -31,36 +32,66 @@ export const Panel = ({ title, hint, action, children, className = '' }) => (
 
 export const NoAccess = () => (
   <div className="admin-empty">
-    <span className="admin-empty-icon"><Lock strokeWidth={1.5} /></span>
+    <span className="admin-empty-icon">
+      <Lock strokeWidth={1.5} />
+    </span>
     <h2 className="admin-card-title">You do not have access to this</h2>
     <p className="admin-subtitle">Ask a super admin if you need this screen.</p>
   </div>
 )
 
-export const StatCard = ({ icon: Icon, label, value, change, highlight = false }) => {
+export const StatCard = ({
+  icon: Icon,
+  label,
+  value,
+  change,
+  highlight = false,
+}) => {
   const up = change >= 0
   const Trend = up ? TrendingUp : TrendingDown
   return (
     <article className={`admin-stat ${highlight ? 'admin-stat--primary' : ''}`}>
       <div className="admin-stat-top">
         <p className="admin-stat-label">{label}</p>
-        <span className="admin-stat-icon"><Icon strokeWidth={1.5} /></span>
+        <span className="admin-stat-icon">
+          <Icon strokeWidth={1.5} />
+        </span>
       </div>
       <p className="admin-stat-value">{value}</p>
-      <p className={`admin-trend ${up ? 'admin-trend--up' : 'admin-trend--down'}`}>
-        <Trend strokeWidth={2} />
-        {up ? '+' : ''}{change}% <span>vs last month</span>
-      </p>
+      {change != null && (
+        <p
+          className={`admin-trend ${up ? 'admin-trend--up' : 'admin-trend--down'}`}
+        >
+          <Trend strokeWidth={2} />
+          {up ? '+' : ''}
+          {change}% <span>vs last month</span>
+        </p>
+      )}
     </article>
   )
 }
 
 export const StatusPill = ({ status }) => (
-  <span className={`admin-status admin-status--${status.toLowerCase()}`}>{status}</span>
+  <span
+    className={`admin-status admin-status--${String(status ?? 'unknown')
+      .toLowerCase()
+      .replace(/ /g, '_')}`}
+  >
+    {label(status)}
+  </span>
 )
 
 // `columns`: [{ key, label, render?, align? }] — `render` receives the row.
-export const AdminTable = ({ title, action, columns, rows, empty = 'Nothing to show yet.' }) => (
+export const AdminTable = ({
+  title,
+  action,
+  columns,
+  rows,
+  empty = 'Nothing to show yet.',
+  sort,
+  order = 'desc',
+  onSort,
+}) => (
   <section className="admin-card">
     {(title || action) && (
       <div className="admin-card-head">
@@ -73,22 +104,60 @@ export const AdminTable = ({ title, action, columns, rows, empty = 'Nothing to s
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.key} className={col.align === 'right' ? 'text-right' : ''}>{col.label}</th>
+              <th
+                key={col.key}
+                className={col.align === 'right' ? 'text-right' : ''}
+                aria-sort={
+                  onSort && sort === (col.sortKey ?? col.key)
+                    ? order === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : undefined
+                }
+              >
+                {onSort && col.sortable ? (
+                  <button
+                    type="button"
+                    className="admin-sort"
+                    onClick={() => onSort(col.sortKey ?? col.key)}
+                  >
+                    {col.label}{' '}
+                    <span aria-hidden="true">
+                      {sort === (col.sortKey ?? col.key)
+                        ? order === 'asc'
+                          ? '↑'
+                          : '↓'
+                        : '↕'}
+                    </span>
+                  </button>
+                ) : (
+                  col.label
+                )}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.length === 0 ? (
-            <tr><td colSpan={columns.length} className="admin-table-empty">{empty}</td></tr>
-          ) : rows.map((row) => (
-            <tr key={row.id}>
-              {columns.map((col) => (
-                <td key={col.key} className={col.align === 'right' ? 'text-right' : ''}>
-                  {col.render ? col.render(row) : row[col.key]}
-                </td>
-              ))}
+            <tr>
+              <td colSpan={columns.length} className="admin-table-empty">
+                {empty}
+              </td>
             </tr>
-          ))}
+          ) : (
+            rows.map((row) => (
+              <tr key={row.id}>
+                {columns.map((col) => (
+                  <td
+                    key={col.key}
+                    className={col.align === 'right' ? 'text-right' : ''}
+                  >
+                    {col.render ? col.render(row) : row[col.key]}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
@@ -97,7 +166,9 @@ export const AdminTable = ({ title, action, columns, rows, empty = 'Nothing to s
 
 export const NameCell = ({ name, sub }) => (
   <div className="admin-name-cell">
-    <span className="admin-avatar admin-avatar--sm" aria-hidden="true">{name[0]}</span>
+    <span className="admin-avatar admin-avatar--sm" aria-hidden="true">
+      {name?.[0] ?? '?'}
+    </span>
     <div className="min-w-0">
       <p className="admin-cell-strong">{name}</p>
       {sub && <p className="admin-cell-sub">{sub}</p>}

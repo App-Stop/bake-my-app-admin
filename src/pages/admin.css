@@ -172,6 +172,8 @@
   @apply bg-surface text-dark-900 enabled:hover:bg-line;
 }
 
+.admin-btn--danger { @apply bg-red-50 text-red-700 enabled:hover:bg-red-100; }
+
 .admin-spin {
   @apply animate-spin;
 }
@@ -518,9 +520,68 @@
   @apply px-5 py-2.5 bg-surface/60 text-left text-[12px] font-semibold uppercase tracking-wide text-muted-light whitespace-nowrap;
 }
 
+.admin-sort { @apply inline-flex items-center gap-2 text-inherit uppercase cursor-pointer bg-transparent border-0; }
+
 .admin-table td {
   @apply px-5 py-3 border-t border-surface whitespace-nowrap tabular-nums;
 }
+
+.admin-table td:has(.admin-changes),
+.admin-table td:has(.admin-log-error) { @apply whitespace-normal min-w-[220px]; }
+
+/* API lists and detail screens use the same surfaces and spacing as account settings. */
+.admin-filter-panel { @apply overflow-visible p-5; }
+.admin-filter-grid { @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-end; }
+.admin-filter-reset { @apply flex items-end; }
+.admin-inline { @apply flex flex-wrap items-center gap-2; }
+.admin-spread { @apply justify-between; }
+.admin-loading { @apply flex items-center justify-center gap-3 p-12 rounded-[10px] bg-white text-[14px] text-muted; }
+.admin-pagination { @apply flex flex-wrap items-center justify-between gap-4 text-[13px] text-muted; }
+.admin-pagination .admin-field { @apply flex-row items-center; }
+.admin-pagination select { @apply w-20 bg-white; }
+.admin-textarea { @apply h-auto min-h-28 py-3 resize-y; }
+.admin-facts { @apply grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-[14px]; }
+.admin-facts dt { @apply text-[12px] text-muted mb-1; }
+.admin-facts dd { @apply font-medium break-words; }
+.admin-prose { @apply whitespace-pre-wrap break-words text-[14px] leading-relaxed; }
+.admin-timeline { @apply flex flex-col list-none; }
+.admin-timeline > li { @apply flex flex-col gap-2 py-4 border-t border-surface first:border-t-0 first:pt-0 last:pb-0; }
+.admin-timeline strong { @apply text-[14px] font-medium; }
+.admin-timeline time { @apply text-[12px] text-muted; }
+.admin-changes { @apply flex flex-col gap-1 text-[12px] min-w-0; }
+.admin-changes > div { @apply flex flex-wrap gap-x-2; }
+.admin-changes dt { @apply font-semibold; }
+.admin-changes dd { @apply text-muted whitespace-pre-wrap break-all; }
+.admin-detail-links { @apply mt-5; }
+.admin-permissions { @apply flex flex-wrap gap-2; }
+.admin-permissions .admin-role { @apply m-0; }
+.admin-feature-list { @apply list-disc pl-5 mt-2 text-[14px] leading-loose text-muted; }
+.admin-dim { @apply opacity-50; }
+.admin-section-title { @apply text-[18px] font-semibold; }
+.admin-queue-links { @apply flex flex-col gap-3 items-start; }
+.admin-bars { @apply flex flex-col gap-3 max-h-[320px] overflow-y-auto; }
+.admin-bar-row { @apply grid grid-cols-[minmax(80px,120px)_1fr_40px] gap-3 items-center text-[12px]; }
+.admin-bar-row > span { @apply text-muted; }
+.admin-bar-row > div { @apply h-3 bg-primary-light rounded overflow-hidden; }
+.admin-bar-row > div > span { @apply block h-full bg-primary rounded; }
+.admin-bar-row > strong { @apply text-right tabular-nums; }
+.admin-multi { @apply relative; }
+.admin-multi summary { @apply flex items-center h-11 px-3 bg-surface rounded-[8px] text-[14px] cursor-pointer list-none truncate; }
+.admin-multi summary:focus-visible { @apply outline-2 outline-primary; }
+.admin-multi-options { @apply absolute top-full left-0 right-0 z-20 p-3 mt-1 shadow-lg rounded-[8px] bg-white flex flex-col gap-3 max-h-64 overflow-y-auto; }
+.admin-multi-options label { @apply flex items-center gap-2 text-[13px] cursor-pointer; }
+.admin-multi-options input { @apply accent-primary; }
+.admin-log-error { @apply mt-1 text-[12px] text-red-700; }
+.admin-log-error summary { @apply cursor-pointer; }
+.admin-log-error p { @apply whitespace-pre-wrap break-words; }
+.admin-action { @apply flex flex-col gap-2; }
+.admin-dialog-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/40; }
+.admin-dialog { @apply flex flex-col gap-5 w-full max-w-[460px] max-h-[90dvh] overflow-y-auto p-6 bg-white rounded-[10px] text-[14px] leading-relaxed shadow-xl; }
+.admin-status--trial, .admin-status--new, .admin-status--contacted, .admin-status--in_progress { @apply bg-primary-light text-primary; }
+.admin-status--live, .admin-status--won, .admin-status--sent, .admin-status--subscribed, .admin-status--on_sale { @apply bg-emerald-50 text-emerald-700; }
+.admin-status--expired, .admin-status--cancelling, .admin-status--demo_scheduled, .admin-status--quote_sent, .admin-status--incomplete, .admin-status--not_on_sale_yet { @apply bg-amber-50 text-amber-700; }
+.admin-status--past_due, .admin-status--failed, .admin-status--locked, .admin-status--spam { @apply bg-red-50 text-red-700; }
+.admin-status--skipped, .admin-status--off, .admin-status--lost, .admin-status--paused, .admin-status--cancelled, .admin-status--switched_off, .admin-status--hidden_from_website, .admin-status--sold_by_quote { @apply bg-surface text-muted; }
 
 .admin-table th.text-right,
 .admin-table td.text-right {

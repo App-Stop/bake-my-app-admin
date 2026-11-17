@@ -4,7 +4,9 @@
 // - a 401 triggers one refresh and one retry; refreshes never overlap, because
 //   reusing a rotated cookie revokes the session on every device.
 
-export const API_URL = (import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3060').replace(/\/+$/, '')
+export const API_URL = (
+  import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:3060'
+).replace(/\/+$/, '')
 
 const AUTH_PREFIX = '/v1/admin/auth/'
 
@@ -21,11 +23,17 @@ const FALLBACK_MESSAGES = {
 
 export class ApiError extends Error {
   constructor(status, message, fields = []) {
-    super(message || FALLBACK_MESSAGES[status] || 'Something went wrong. Try again.')
+    super(
+      message ||
+        FALLBACK_MESSAGES[status] ||
+        'Something went wrong. Try again.',
+    )
     this.status = status
     // Server paths may be nested ("body.password"); the last segment is the field.
     this.fields = (Array.isArray(fields) ? fields : []).map((f) => ({
-      path: String(Array.isArray(f.path) ? f.path.at(-1) : f.path ?? '').split('.').pop(),
+      path: String(Array.isArray(f.path) ? f.path.at(-1) : (f.path ?? ''))
+        .split('.')
+        .pop(),
       message: f.message,
     }))
   }
@@ -51,7 +59,11 @@ export const getSessionState = () => state
 
 export const startSession = (data) => {
   if (data?.accessToken) accessToken = data.accessToken
-  setState({ status: 'signedIn', staff: data?.staff ?? state.staff, reason: null })
+  setState({
+    status: 'signedIn',
+    staff: data?.staff ?? state.staff,
+    reason: null,
+  })
 }
 
 // `reason` lets the sign-in screen explain why the person landed there.
@@ -109,11 +121,18 @@ export const refreshSession = () => {
 }
 
 // Returns the `{ success, message, data }` envelope, or throws ApiError.
-export const request = async (path, options = {}) => {
+export const requestRaw = async (path, options = {}) => {
+  const sentToken = accessToken
   let res = await send(path, options)
   if (res.status === 401 && !path.startsWith(AUTH_PREFIX)) {
-    await refreshSession() // throws when signed out; the app then shows sign-in
+    // A slower 401 may arrive after another request already rotated the token.
+    if (sentToken === accessToken || refreshing) await refreshSession()
     res = await send(path, options)
+    if (res.status === 401) endSession('expired')
   }
-  return readEnvelope(res)
+  if (!res.ok) await readEnvelope(res)
+  return res
 }
+
+export const request = async (path, options = {}) =>
+  readEnvelope(await requestRaw(path, options))

@@ -20,7 +20,7 @@
   --color-surface : #F5F5F5;
   --color-subtle : #9C9C9C;
   --color-placeholder : #B6B6B6;
-  --font-primary : 'Inter', 'sans-serif';
+  --font-primary : 'Inter', sans-serif;
 }
 
 body {
