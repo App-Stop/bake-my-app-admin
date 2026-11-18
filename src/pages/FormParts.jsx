@@ -8,6 +8,7 @@ import {
   EyeOff,
   Info,
   LoaderCircle,
+  TriangleAlert,
 } from 'lucide-react'
 
 export const Field = ({ label, error, hint, children, id }) => (
@@ -114,7 +115,12 @@ export const Button = ({
   </button>
 )
 
-const ALERT_ICONS = { error: CircleAlert, success: CircleCheck, info: Info }
+const ALERT_ICONS = {
+  error: CircleAlert,
+  success: CircleCheck,
+  info: Info,
+  warning: TriangleAlert,
+}
 
 export const Alert = ({ tone = 'error', children, action }) => {
   const Icon = ALERT_ICONS[tone]

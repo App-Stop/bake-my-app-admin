@@ -3,6 +3,7 @@ import AdminLayout from './pages/AdminLayout'
 import Dashboard from './pages/Dashboard'
 import Leads from './pages/Leads'
 import Subscriptions from './pages/Subscriptions'
+import Bakeries from './pages/Bakeries'
 import Plans from './pages/Plans'
 import { AuditLogs, EmailLogs } from './pages/Logs'
 import { NoAccess } from './pages/AdminParts'
@@ -22,7 +23,7 @@ import './pages/admin.css'
 
 const PAGES = {
   dashboard: Dashboard,
-  bakeries: Subscriptions,
+  bakeries: Bakeries,
   subscriptions: Subscriptions,
   leads: Leads,
   plans: Plans,

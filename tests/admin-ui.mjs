@@ -17,6 +17,7 @@ function installMock() {
           'leads:export',
           'subscriptions:view',
           'plans:view',
+          'tenants:view',
         ]
       : ['*']
   const me = {
@@ -102,6 +103,63 @@ function installMock() {
     },
   }
   lead.subscriptions = [subscription]
+  subscription.tenant = null
+  let tenant = {
+    id: 'tenant-1',
+    slug: 'test-bakery',
+    name: 'Test Bakery',
+    status: 'onboarding',
+    plan: {
+      key: 'startup',
+      interval: 'month',
+      status: 'trial',
+      onboardingStatus: 'in_progress',
+    },
+    owner: null,
+    pendingOwnerInvite: true,
+    createdAt: '2026-11-17T10:00:00Z',
+    wentLiveAt: null,
+    timezone: 'Asia/Karachi',
+    currencyCode: 'PKR',
+    contactEmail: lead.email,
+    contactPhone: null,
+    suspendedAt: null,
+    suspendedReason: null,
+    subscriptionId: 'sub-1',
+    theme: {
+      preset: 'indigo',
+      primary: '#554CF1',
+      appName: null,
+      currencySymbol: 'Rs',
+      logoUrl: null,
+    },
+    people: 0,
+    branches: { active: 1, total: 2 },
+    owners: [],
+    pendingInvites: [
+      {
+        id: 'tinvite-1',
+        email: 'owner@example.test',
+        role: 'tenant_owner',
+        expiresAt: '2026-11-16T10:00:00Z',
+        expired: true,
+      },
+    ],
+    recentActivity: [
+      {
+        id: 'act-1',
+        action: 'tenant.created',
+        actor: { type: 'staff', id: 'me', name: 'QA Admin' },
+        createdAt: '2026-11-17T10:00:00Z',
+      },
+      {
+        id: 'act-2',
+        action: 'tenant.owner_invited',
+        actor: { type: 'staff', id: 'me', name: 'Second Actor' },
+        createdAt: '2026-11-17T11:00:00Z',
+      },
+    ],
+  }
   const staff = [
     { ...me, isActive: true, activeSessions: 2, recentActivity: [] },
     {
@@ -229,6 +287,52 @@ function installMock() {
       return response(subscription)
     }
     if (path === 'subscriptions/sub-1') return response(subscription)
+    if (path === 'subscriptions/sub-1/create-tenant') {
+      if (subscription.tenant) return response(null, 409)
+      tenant = { ...tenant, name: body.name, slug: body.slug ?? 'test-bakery' }
+      subscription.tenant = {
+        id: tenant.id,
+        slug: tenant.slug,
+        name: tenant.name,
+        status: tenant.status,
+      }
+      return response(
+        {
+          tenant,
+          invite: {
+            email: body.ownerEmail,
+            expiresAt: '2026-11-19T10:00:00Z',
+            emailSent: false,
+          },
+        },
+        201,
+      )
+    }
+    if (path === 'tenants') return list([tenant], 'tenants')
+    if (path === 'tenants/tenant-1') return response(tenant)
+    if (path === 'tenants/tenant-1/status') {
+      tenant =
+        body.action === 'suspend'
+          ? {
+              ...tenant,
+              status: 'suspended',
+              suspendedAt: '2026-11-18T09:00:00Z',
+              suspendedReason: body.reason,
+            }
+          : {
+              ...tenant,
+              status: 'onboarding',
+              suspendedAt: null,
+              suspendedReason: null,
+            }
+      return response(tenant)
+    }
+    if (path === 'tenants/tenant-1/owner-invite')
+      return response({
+        email: body.email ?? 'owner@example.test',
+        expiresAt: '2026-11-20T10:00:00Z',
+        emailSent: true,
+      })
     if (path === 'staff/roles') return response(roles)
     if (path === 'staff/invites') {
       if (method === 'POST') {
@@ -649,6 +753,107 @@ try {
   )
   console.log('PASS: onboarding live confirmation and read-only billing')
 
+  const submitDialog = () =>
+    evaluate(() =>
+      document.querySelector('.admin-dialog button[type="submit"]').click(),
+    )
+  await navigate('/subscriptions/sub-1')
+  await click('Create bakery')
+  await waitText('Address: test-bakery')
+  await fill('Address name (optional)', 'Taken Name')
+  await waitText('Address: taken-name')
+  await evaluate(() => {
+    window.__failure = {
+      path: 'subscriptions/sub-1/create-tenant',
+      status: 422,
+      fields: [{ path: 'body.slug', message: 'That address is taken.' }],
+    }
+  })
+  await submitDialog()
+  await waitText('That address is taken.')
+  await fill('Address name (optional)', 'qa-bakery')
+  await submitDialog()
+  await waitRequest('subscriptions/sub-1/create-tenant', 'POST', {
+    name: 'Test Bakery',
+    slug: 'qa-bakery',
+    ownerName: 'Test Contact',
+    ownerEmail: 'contact@example.test',
+  })
+  assert.ok(
+    await evaluate(
+      () =>
+        !(
+          'currencyCode' in
+          window.__requests.findLast((r) => r.path.endsWith('create-tenant'))
+            .body
+        ),
+    ),
+    'Unchanged defaults are left to the server',
+  )
+  await waitFor(() => location.pathname === '/bakeries/tenant-1')
+  await waitText('did not go out')
+  await waitText('2 branches, 1 switched off')
+  await waitText('Expired')
+  assert.ok(
+    await evaluate(() =>
+      document
+        .querySelector('.admin-timeline li')
+        ?.innerText.includes('Second Actor'),
+    ),
+    'Activity is newest first with the actor name',
+  )
+  await screenshot('bakery-detail')
+  await click('Send invitation again')
+  await submitDialog()
+  await waitText('A fresh invitation was emailed to owner@example.test')
+  assert.equal(
+    await evaluate(
+      () =>
+        Object.keys(
+          window.__requests.find((r) => r.path.endsWith('owner-invite')).body,
+        ).length,
+    ),
+    0,
+    'Resending to the same address sends an empty body',
+  )
+  await click('Suspend bakery')
+  await waitText('signed out at once')
+  await fill('Reason', 'Payment dispute')
+  await submitDialog()
+  await waitRequest('tenants/tenant-1/status', 'PATCH', {
+    action: 'suspend',
+    reason: 'Payment dispute',
+  })
+  await waitText('Reason: Payment dispute')
+  await click('Reactivate bakery')
+  await click('Confirm')
+  await waitRequest('tenants/tenant-1/status', 'PATCH', {
+    action: 'reactivate',
+  })
+  await waitFor(() => !document.body.innerText.includes('Reason: Payment'))
+  console.log(
+    'PASS: create bakery with slug preview and field errors, invite warning and resend, suspend and reactivate',
+  )
+
+  await navigate('/bakeries?status=live,suspended')
+  await waitText('Invitation pending')
+  await waitText('test-bakery')
+  await waitFor(() =>
+    window.__requests.some(
+      (r) => r.path === 'tenants' && r.query.status === 'live,suspended',
+    ),
+  )
+  await fill('Search', 'owner@example.test')
+  await waitFor(() =>
+    window.__requests.some(
+      (r) => r.path === 'tenants' && r.query.q === 'owner@example.test',
+    ),
+  )
+  await screenshot('bakeries')
+  console.log(
+    'PASS: bakeries list, owner invitation state, search and status filter',
+  )
+
   await navigate('/plans')
   await waitText('Some prices are not linked to Stripe yet.')
   await waitText('$129.00')
@@ -751,6 +956,19 @@ try {
       () => !document.body.innerText.includes('Manage onboarding'),
     ),
   )
+  await navigate('/bakeries/tenant-1')
+  await waitText('Recent activity')
+  assert.ok(
+    await evaluate(
+      () =>
+        document.querySelector('nav').innerText.includes('Bakeries') &&
+        !document.body.innerText.includes('Suspend bakery') &&
+        !document.body.innerText.includes('Send invitation again'),
+    ),
+    'Sales sees bakeries but cannot suspend or invite',
+  )
+  await navigate('/subscriptions/sub-1')
+  await waitText('Onboarding or a super admin creates it.')
   console.log(
     'PASS: mobile layout, permission-gated menus, direct routes and onboarding controls',
   )

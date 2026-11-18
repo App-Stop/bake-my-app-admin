@@ -21,7 +21,7 @@ export const pageAllowed = (staff, page) =>
         {
           leads: 'leads:view',
           subscriptions: 'subscriptions:view',
-          bakeries: 'subscriptions:view',
+          bakeries: 'tenants:view',
           plans: 'plans:view',
           staff: 'staff:manage',
           auditLogs: 'audit_logs:view',
@@ -33,6 +33,7 @@ export const firstPage = (staff) =>
     'dashboard',
     'leads',
     'subscriptions',
+    'bakeries',
     'plans',
     'staff',
     'auditLogs',

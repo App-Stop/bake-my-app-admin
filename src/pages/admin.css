@@ -210,6 +210,10 @@
   @apply bg-primary-light text-primary-dark;
 }
 
+.admin-alert--warning {
+  @apply bg-amber-50 text-amber-800;
+}
+
 .admin-link {
   @apply inline-flex items-center gap-1 text-[14px] font-medium text-primary no-underline hover:underline;
 }
@@ -575,11 +579,24 @@
 .admin-log-error summary { @apply cursor-pointer; }
 .admin-log-error p { @apply whitespace-pre-wrap break-words; }
 .admin-action { @apply flex flex-col gap-2; }
+.admin-more summary { @apply cursor-pointer text-[14px] font-medium text-primary w-fit; }
+.admin-more-body { @apply flex flex-col gap-4 mt-4; }
+.admin-swatch { @apply inline-block size-5 shrink-0 rounded-[4px] border border-line align-middle; }
+.admin-brand-row { @apply flex items-center gap-4 mb-5; }
+.admin-logo-preview { @apply size-14 shrink-0 rounded-full object-cover border border-line bg-white; }
+.admin-logo-initial { @apply flex items-center justify-center size-14 shrink-0 rounded-full text-[22px] font-semibold text-white uppercase; }
+.admin-subhead { @apply mt-6 text-[13px] font-semibold text-dark-900; }
+.admin-subhead-note { @apply mt-2; }
+.admin-people { @apply flex flex-col list-none gap-3 mt-3; }
+.admin-people > li { @apply flex items-start justify-between gap-3 text-[14px]; }
+.admin-manage-section { @apply flex flex-col gap-3 items-start pt-5 border-t border-surface first:pt-0 first:border-t-0; }
+.admin-manage-section p { @apply text-[13px] text-muted leading-normal; }
+.admin-bakery-link { @apply flex items-center justify-between gap-3 flex-wrap; }
 .admin-dialog-backdrop { @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/40; }
 .admin-dialog { @apply flex flex-col gap-5 w-full max-w-[460px] max-h-[90dvh] overflow-y-auto p-6 bg-white rounded-[10px] text-[14px] leading-relaxed shadow-xl; }
-.admin-status--trial, .admin-status--new, .admin-status--contacted, .admin-status--in_progress { @apply bg-primary-light text-primary; }
+.admin-status--onboarding, .admin-status--trial, .admin-status--new, .admin-status--contacted, .admin-status--in_progress { @apply bg-primary-light text-primary; }
 .admin-status--live, .admin-status--won, .admin-status--sent, .admin-status--subscribed, .admin-status--on_sale { @apply bg-emerald-50 text-emerald-700; }
-.admin-status--expired, .admin-status--cancelling, .admin-status--demo_scheduled, .admin-status--quote_sent, .admin-status--incomplete, .admin-status--not_on_sale_yet { @apply bg-amber-50 text-amber-700; }
+.admin-status--expired, .admin-status--invitation_pending, .admin-status--cancelling, .admin-status--demo_scheduled, .admin-status--quote_sent, .admin-status--incomplete, .admin-status--not_on_sale_yet { @apply bg-amber-50 text-amber-700; }
 .admin-status--past_due, .admin-status--failed, .admin-status--locked, .admin-status--spam { @apply bg-red-50 text-red-700; }
 .admin-status--skipped, .admin-status--off, .admin-status--lost, .admin-status--paused, .admin-status--cancelled, .admin-status--switched_off, .admin-status--hidden_from_website, .admin-status--sold_by_quote { @apply bg-surface text-muted; }
 

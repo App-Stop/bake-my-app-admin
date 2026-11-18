@@ -76,6 +76,7 @@ export const BILLING_STATUSES = [
   'incomplete',
 ]
 export const ONBOARDING_STATUSES = ['pending', 'in_progress', 'live']
+export const TENANT_STATUSES = ['onboarding', 'live', 'suspended']
 export const PLAN_KEYS = ['startup', 'growth', 'business_suite']
 
 const ACTIONS = {
@@ -100,5 +101,6 @@ const ACTIONS = {
   'lead.deleted': 'Deleted a lead',
   'leads.exported': 'Exported leads',
   'subscription.onboarding_updated': 'Updated onboarding',
+  'tenant.created': 'Created a bakery',
 }
 export const actionLabel = (action) => ACTIONS[action] ?? action ?? '—'

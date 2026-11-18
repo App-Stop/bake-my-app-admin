@@ -331,7 +331,11 @@ export const Changes = ({ changes }) => (
   </dl>
 )
 
-export const ActivityList = ({ items, render }) =>
+export const ActivityList = ({
+  items,
+  render,
+  who = (item) => item.staff?.name ?? 'System',
+}) =>
   items?.length ? (
     <ul className="admin-timeline">
       {items.map((item, i) => (
@@ -342,7 +346,7 @@ export const ActivityList = ({ items, render }) =>
             </strong>
             <time>{dateTime(item.createdAt)}</time>
           </div>
-          <p className="admin-cell-sub">{item.staff?.name ?? 'System'}</p>
+          <p className="admin-cell-sub">{who(item)}</p>
           <Changes changes={item.changes} />
         </li>
       ))}
@@ -452,21 +456,19 @@ export const EditForm = ({
   )
 }
 
-export const ConfirmDialog = ({
-  message,
-  onCancel,
-  onConfirm,
-  loading,
-  error,
-  title = 'Confirm change',
-}) => {
+const FOCUSABLE =
+  'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, a[href]'
+
+// Modal shell: traps focus, closes on Escape (unless busy) and hides the page
+// from assistive tech while open. Callers supply the body and the actions.
+export const Dialog = ({ title, description, onClose, busy, children }) => {
   const id = useId()
   useEffect(() => {
     const previous = document.activeElement
     const root = document.getElementById('root')
     const wasInert = root?.inert
     if (root) root.inert = true
-    document.getElementById(id)?.querySelector('button')?.focus()
+    document.getElementById(id)?.querySelector(FOCUSABLE)?.focus()
     return () => {
       if (root) root.inert = wasInert
       previous?.focus()
@@ -474,17 +476,15 @@ export const ConfirmDialog = ({
   }, [id])
   useEffect(() => {
     const keydown = (e) => {
-      if (e.key === 'Escape' && !loading) onCancel()
+      if (e.key === 'Escape' && !busy) onClose()
       if (e.key === 'Tab') {
-        const buttons = document
-          .getElementById(id)
-          ?.querySelectorAll('button:not(:disabled)')
-        if (!buttons?.length) {
+        const items = document.getElementById(id)?.querySelectorAll(FOCUSABLE)
+        if (!items?.length) {
           e.preventDefault()
           return
         }
-        const first = buttons[0],
-          last = buttons[buttons.length - 1]
+        const first = items[0],
+          last = items[items.length - 1]
         if (e.shiftKey && document.activeElement === first) {
           e.preventDefault()
           last.focus()
@@ -496,7 +496,7 @@ export const ConfirmDialog = ({
     }
     document.addEventListener('keydown', keydown)
     return () => document.removeEventListener('keydown', keydown)
-  }, [id, loading, onCancel])
+  }, [id, busy, onClose])
   return createPortal(
     <div className="admin-dialog-backdrop">
       <div
@@ -504,27 +504,47 @@ export const ConfirmDialog = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-title`}
-        aria-describedby={`${id}-message`}
+        aria-describedby={description ? `${id}-message` : undefined}
         className="admin-dialog"
       >
         <h2 id={`${id}-title`} className="admin-card-title">
           {title}
         </h2>
-        <p id={`${id}-message`}>{message}</p>
-        {error && <Alert>{error}</Alert>}
-        <div className="admin-form-actions">
-          <Button variant="secondary" onClick={onCancel} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={onConfirm} loading={loading}>
-            Confirm
-          </Button>
-        </div>
+        {description && <p id={`${id}-message`}>{description}</p>}
+        {children}
       </div>
     </div>,
     document.body,
   )
 }
+
+export const ConfirmDialog = ({
+  message,
+  onCancel,
+  onConfirm,
+  loading,
+  error,
+  title = 'Confirm change',
+  confirmLabel = 'Confirm',
+  variant = 'primary',
+}) => (
+  <Dialog
+    title={title}
+    description={message}
+    onClose={onCancel}
+    busy={loading}
+  >
+    {error && <Alert>{error}</Alert>}
+    <div className="admin-form-actions">
+      <Button variant="secondary" onClick={onCancel} disabled={loading}>
+        Cancel
+      </Button>
+      <Button variant={variant} onClick={onConfirm} loading={loading}>
+        {confirmLabel}
+      </Button>
+    </div>
+  </Dialog>
+)
 
 export const ActionButton = ({
   action,

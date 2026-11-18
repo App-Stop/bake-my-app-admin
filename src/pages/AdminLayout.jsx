@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   ClipboardList,
+  Croissant,
   FileClock,
   LayoutDashboard,
   LogOut,
@@ -18,6 +19,7 @@ const NAV = [
   { page: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'leads', label: 'Leads', icon: ClipboardList },
   { page: 'subscriptions', label: 'Subscriptions', icon: Store },
+  { page: 'bakeries', label: 'Bakeries', icon: Croissant },
   { page: 'plans', label: 'Plans', icon: Tags },
   { page: 'staff', label: 'Staff', icon: Users, permission: 'staff:manage' },
   { page: 'auditLogs', label: 'Audit log', icon: FileClock },
@@ -51,11 +53,7 @@ const AdminLayout = ({ page, staff, onLogout, children }) => {
                 key={id}
                 href={adminPaths[id]}
                 className="admin-nav-link"
-                aria-current={
-                  (page === 'bakeries' ? 'subscriptions' : page) === id
-                    ? 'page'
-                    : undefined
-                }
+                aria-current={page === id ? 'page' : undefined}
                 onClick={adminLinkClick(adminPaths[id])}
               >
                 <Icon strokeWidth={1.5} />

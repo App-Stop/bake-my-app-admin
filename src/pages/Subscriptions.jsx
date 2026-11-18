@@ -21,6 +21,7 @@ import {
 } from './DataParts'
 import { TextField } from './FormParts'
 import { RelatedEmails } from './Logs'
+import { SubscriptionBakery } from './Bakeries'
 import { detailId } from '../navigation'
 import { adminEndpoint, collection, patchAdmin } from '../services/admin'
 import { useResource } from '../services/useResource'
@@ -247,6 +248,10 @@ const SubscriptionDetail = ({ id }) => {
             />
             <div className="admin-split">
               <div className="admin-stack">
+                <SubscriptionBakery
+                  subscription={s}
+                  onChanged={resource.reload}
+                />
                 <Panel title="Subscription">
                   <Facts
                     items={[
